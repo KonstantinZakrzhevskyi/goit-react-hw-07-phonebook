@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getContacts } from '../../redux/contacts/contacts-selectors';
-import actions from 'redux/contacts/contacts-actions';
+import { toast } from 'react-hot-toast';
+import { contactsOperations, contactsSelectors } from 'redux/contacts/index';
 
 import s from './ContactForm.module.css';
 
 function ContactForm() {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-  const contacts = useSelector(getContacts);
+  const [phone, setPhone] = useState('');
+  const contacts = useSelector(contactsSelectors.getContacts);
   const dispatch = useDispatch();
 
   const handleInputChange = e => {
@@ -19,8 +19,8 @@ function ContactForm() {
         setName(value);
         break;
 
-      case 'number':
-        setNumber(value);
+      case 'phone':
+        setPhone(value);
         break;
 
       default:
@@ -32,15 +32,16 @@ function ContactForm() {
     e.preventDefault();
 
     contacts.map(contact => contact.name).includes(name)
-      ? alert(`${name} is already in contacts.`)
-      : dispatch(actions.addContact({ name, number }));
+      ? toast.error(`${name} is already in contacts.`)
+      : dispatch(contactsOperations.addContact({ name, phone }));
 
     reset();
+    toast.success('addContact');
   };
 
   const reset = () => {
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
   return (
@@ -64,8 +65,8 @@ function ContactForm() {
         <input
           className={s.form__input}
           type="tel"
-          name="number"
-          value={number}
+          name="phone"
+          value={phone}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
           required
